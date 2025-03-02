@@ -9,21 +9,35 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v4
-    - name: Setup Node
-      uses: actions/setup-node@v4
-      with:
-        node-version: 20.12.1
-        cache: npm
-    - name: Initialise npm
-      run: npm ci
-    - name: Perform Static Analysis with ESLint
-      run: npx eslint -o eslint_report.json -f json
-      continue-on-error: true
-    - name: Create ESLint Annotations
-      uses: ataylorme/eslint-annotate-action@v3
-      with:
-        only-pr-files: false
-    - name: Run Jest Tests
-      run: npm test
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.12.1
+          cache: npm
+      - name: Initialise npm
+        run: npm ci
+      - name: Perform Static Analysis with ESLint
+        run: npx eslint -o eslint_report.json -f json
+        continue-on-error: true
+      - name: Create ESLint Annotations
+        uses: ataylorme/eslint-annotate-action@v3
+        with:
+          only-pr-files: false
+      - name: Run Jest Tests
+        run: npm test
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}$
+          password: ${{ secrets.DOCKERHUB_PAT }}$
+      - name: Setup Docker build tools
+        uses: docker/login-action@v3
+      - name: Build image and push to Docker Hub
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfiles/test.Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}$/test-repo:test-latest

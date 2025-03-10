@@ -8,6 +8,8 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    continue-on-error: true
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4

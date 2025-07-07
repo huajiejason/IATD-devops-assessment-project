@@ -23,6 +23,7 @@ jobs:
 
       - name: Perform Static Analysis with ESLint
         run: npx eslint -o eslint_report.json -f json
+        # added continue on error
         continue-on-error: true
 
       - name: Create ESLint Annotations
